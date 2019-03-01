@@ -12,13 +12,15 @@ sudo yum update -y
 #install temp soft
 sudo yum install -y mc nano
 
+# HAPROXY ######################################################################
 echo -e "-- Installing HAProxy\n"
 sudo yum install -y haproxy > /dev/null 2>&1
 sudo systemctl enable haproxy
 sudo systemctl start haproxy
 
-
-/etc/haproxy/haproxy.cfg
+echo -e "-- Configuring HAProxy\n"
+sudo mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.old
+cat <<EOF | sudo tee -a /etc/haproxy/haproxy.cfg
 global
     log /dev/log local0
     log localhost local1 notice
@@ -51,10 +53,12 @@ backend webservers
     option http-server-close
     server webserver1 192.168.56.22:80 check
     server webserver2 192.168.56.23:80 check
+EOF
 
 echo -e "-- Validating HAProxy configuration\n"
 haproxy -f /etc/haproxy/haproxy.cfg -c
 
+echo -e "-- Restarting HAProxy\n"
 sudo systemctl restart haproxy
 
 # END ##########################################################################
