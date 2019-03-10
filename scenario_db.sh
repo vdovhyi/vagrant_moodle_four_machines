@@ -25,4 +25,4 @@ FLUSH PRIVILEGES;"
 # restart
 sudo systemctl restart mariadb
 
-
+#######yyyoo
